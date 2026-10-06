@@ -1,0 +1,69 @@
+{
+  "task": "logs-learn",
+  "condition": "subagents",
+  "role": "learn",
+  "error": null,
+  "timestamp": "2026-10-06T05:09:10.154680+00:00",
+  "skills_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "seconds": 1089.9,
+  "tokens": {
+    "input": 604159,
+    "output": 141925,
+    "total": 746084
+  },
+  "tool_calls": 20,
+  "subagent_calls": 1,
+  "skills_read": 0,
+  "skills_modified": false,
+  "final_message": "[{'type': 'text', 'text': '', 'extras': {'signature': 'EnIKcAFpFH0TSa9MgUzqtzGtU9eCCKDiY8FQlTk0sYnk5EwQV2d/qPklr45LyHBeMkVYCn7CwZs6RTkvA1Ybz/MGkgKPrZCMe8lxz6s/IlN0NSECPhqv3ivdKfXPbgGUl6yDBhx55vyXkgZ0AnI3wD0/sYQ='}}]",
+  "score": 0.5555555555555556,
+  "passed": 5,
+  "total": 9,
+  "checks": [
+    {
+      "name": "valid_structure",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "entry_count",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "timestamps_utc",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "exception_fields",
+      "passed": false,
+      "detail": "17 wrong `exception` values"
+    },
+    {
+      "name": "repeat_counts",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "counts_by_service",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "rule_service_names",
+      "passed": false,
+      "detail": "RULE: service names in the output are lower-case with '-' replaced by '_' (payment-service -> payment_service)."
+    },
+    {
+      "name": "rule_sorted_errors",
+      "passed": false,
+      "detail": "RULE: `errors` is sorted by service, then by timestamp_utc, ascending."
+    },
+    {
+      "name": "rule_schema_header",
+      "passed": false,
+      "detail": "RULE: the top-level object has \"schema_version\": 2 and \"generated_by\": \"log-triage\"."
+    }
+  ]
+}

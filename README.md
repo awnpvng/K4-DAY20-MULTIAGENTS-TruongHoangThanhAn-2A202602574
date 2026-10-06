@@ -30,21 +30,21 @@ flowchart TD
 
 Ba điều kiện được so sánh (condition):
 
-| Điều kiện | Mô tả |
-|---|---|
-| `baseline` | Tác tử Deep Agents mặc định, không có skill. Đường cơ sở. |
-| `subagents` | Thêm các subagent do nhóm định nghĩa (đa tác tử). |
+| Điều kiện    | Mô tả                                                                                              |
+| --------------- | ---------------------------------------------------------------------------------------------------- |
+| `baseline`    | Tác tử Deep Agents mặc định, không có skill. Đường cơ sở.                                |
+| `subagents`   | Thêm các subagent do nhóm định nghĩa (đa tác tử).                                           |
 | `skills-auto` | Nạp skill do curator tự sinh từ phản hồi và vết của tác vụ học (tác tử tự tiến hóa). |
 
 ### 2.2. Tác vụ (task) và cách đánh giá thành công hay thất bại
 
 **Có 3 họ tác vụ (family), mỗi họ có 2 tác vụ: 1 tác vụ học và 1 tác vụ đánh giá. Tổng cộng 6 tác vụ.** Mỗi tác vụ là một thư mục `tasks/<id>/` gồm đề bài (`instruction.md`), dữ liệu (`workspace/`) và bộ kiểm tra tự động (`check.py`). Tác vụ đánh giá có cùng loại việc và dùng lại các quy ước của tác vụ học, nhưng khác dữ liệu và thêm một quy ước mới.
 
-| Họ | Tác vụ học | Tác vụ đánh giá | Tác vụ là gì |
-|---|---|---|---|
-| `code` | `code-learn` | `code-eval` | Sửa một gói Python nhỏ đang có test lỗi. Lỗi gốc nằm ở hàm dùng chung, và có lỗi chỉ thấy khi đối chiếu docstring. |
-| `data` | `data-learn` | `data-eval` | Trả lời câu hỏi có đáp án chính xác từ tệp CSV/JSON bẩn (dòng trùng, giá trị thiếu, nhiều định dạng ngày, múi giờ) và ghi `answer.json`, `clean.csv`. |
-| `logs` | `logs-learn` | `logs-eval` | Phân tích tệp log (stack trace nhiều dòng, dòng lặp, nhiều cách viết mức log, múi giờ) thành `errors.json`. |
+| Họ      | Tác vụ học  | Tác vụ đánh giá | Tác vụ là gì                                                                                                                                                                   |
+| -------- | -------------- | -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `code` | `code-learn` | `code-eval`        | Sửa một gói Python nhỏ đang có test lỗi. Lỗi gốc nằm ở hàm dùng chung, và có lỗi chỉ thấy khi đối chiếu docstring.                                            |
+| `data` | `data-learn` | `data-eval`        | Trả lời câu hỏi có đáp án chính xác từ tệp CSV/JSON bẩn (dòng trùng, giá trị thiếu, nhiều định dạng ngày, múi giờ) và ghi`answer.json`, `clean.csv`. |
+| `logs` | `logs-learn` | `logs-eval`        | Phân tích tệp log (stack trace nhiều dòng, dòng lặp, nhiều cách viết mức log, múi giờ) thành`errors.json`.                                                         |
 
 **Cách chấm:** `check.py` chạy một danh sách phép kiểm tra (check) trên thư mục làm việc mà tác tử đã sửa. Mỗi check chỉ có hai kết quả là đạt hoặc không đạt.
 
