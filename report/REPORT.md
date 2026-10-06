@@ -1,7 +1,5 @@
 # Báo cáo Lab: Self evolving Agentic
 
-> Sao chép tệp này thành `report/REPORT.md` (đã làm ở Phần 0) và điền dần qua các Phần của lab. Xóa các dòng hướng dẫn dạng trích dẫn (bắt đầu bằng `>`). Văn phong kỹ thuật, ngắn gọn, mọi nhận định đi kèm số liệu hoặc bằng chứng. Trong buổi học: điền mục 1 đến 7 (bản nháp). Sau buổi học: hoàn thiện mục 8 đến 10.
-
 ## 1. Thông tin nhóm và cấu hình
 
 | Họ tên                  | Mã sinh viên | Phần đóng góp |
@@ -15,8 +13,6 @@
 
 ## 2. Giả thuyết (commit TRƯỚC tag `freeze`, Phần 4.0)
 
-> Dự đoán điều kiện nào đạt điểm cao nhất trên **tác vụ đánh giá** và vì sao. Nêu căn cứ từ phân loại lỗi (mục 4) và từ tài liệu tham khảo. Điền cả ba dòng; `verify_freeze.py` kiểm tra điều này.
-
 - H1 (subagents so với baseline): **Dự đoán `subagents` KHÔNG vượt `baseline`** trên tác vụ đánh giá, điểm có thể thấp hơn hoặc ngang bằng, với chi phí token biến thiên mạnh (có thể cao hơn nhiều). Căn cứ: ở tác vụ học, `subagents` không giải quyết được nhóm lỗi E (9/10 check thất bại ở baseline) vì bản thân tác tử chính không biết các quy tắc tổ chức để truyền xuống subagent — giao việc không thể bù đắp cho việc "không biết luật". Quan sát thực tế: `data-learn` giảm token (304k→186k) nhưng `logs-learn` tăng gấp ~13 lần (56k→746k, do tác tử vừa giao việc vừa tự làm lại) và `code-learn` không hoàn thành (`GraphRecursionError`). Tác tử chính cũng ưu tiên subagent mặc định `general-purpose` thay vì 3 subagent tự định nghĩa, cho thấy việc điều phối chưa ổn định — rủi ro lặp lại ở tác vụ đánh giá.
 - H2 (skills-auto so với baseline): **Dự đoán cải thiện nhẹ hoặc không đáng kể**, khó tổng quát hóa đều cho cả 3 họ tác vụ. Căn cứ: `05_skill_quality.md`/`04_curator.md` trích dẫn SkillsBench (skill người viết tăng ~16 điểm %, skill tự sinh trung bình KHÔNG có lợi) và SkillEvolBench (lợi ích trên tác vụ học thường không chuyển sang tác vụ mới — overfitting). Dữ liệu học của nhóm cũng cho thấy phân hóa rõ: `data-learn` đọc 2/3 skill và có khả năng cải thiện nhất (do `data-normalization-checklist` khớp đúng loại lỗi D); `logs-learn` và `code-learn` có `skills_read=0` ở lần chạy Phần 3.4, nên nhiều khả năng skill không được dùng trên `logs-eval`/`code-eval`. Riêng với quy ước **mới** của tác vụ đánh giá (chưa từng xuất hiện trong `detail` mà curator thấy), skill khó có tác dụng vì không được huấn luyện trên dữ liệu đó — dự đoán không cải thiện các check `rule_` mới.
 - H3 (tác vụ học so với tác vụ đánh giá): **Dự đoán điểm tác vụ đánh giá thấp hơn tác vụ học ở mọi điều kiện**, đặc biệt ở các check `rule_` (nhóm E). Căn cứ: tác vụ đánh giá thêm một quy ước tổ chức mới mà tác tử chưa từng thấy; vì nhóm lỗi E chiếm 90% thất bại ở tác vụ học do tác tử không chủ động dò tìm "RULE" ẩn, hành vi này nhiều khả năng lặp lại với quy ước mới của tác vụ đánh giá, bất kể điều kiện nào. Các check kỹ thuật (A-D) được dự đoán vẫn đạt tỉ lệ cao tương tự tác vụ học (17/18 ở baseline) vì bản chất xử lý dữ liệu/mã nguồn tương tự, chỉ khác dữ liệu đầu vào.
@@ -28,8 +24,6 @@
 3. Từ mô tả `task`: "Each invocation is stateless by default: the agent sees only the prompt you give it and returns a single final report." Từ mô tả `execute`: "You MUST avoid using search commands like find and grep. Instead use the grep, glob tools to search."
 
 ## 4. Đường cơ sở và phân loại lỗi (Phần 2.2)
-
-> Chỉ dùng tác vụ học. Mỗi dòng là một check thất bại.
 
 | Tác vụ   | Check thất bại          | Nhóm lỗi (A-G)                 | Bằng chứng (trích ngắn từ`detail` hoặc vết)                                                                                                                                                                                                                                                                                                   |
 | ---------- | ------------------------- | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -80,8 +74,6 @@ Giải thích dùng skill (mục 4.4 RUBRIC): `data-learn` đọc đủ 2/3 skil
 
 ## 7. Kết quả so sánh (Phần 4.3, 4.4)
 
-> Dán nội dung `report/table.md` và kết quả `python scripts/check_breakdown.py`. Nêu các lần chạy có `error` hoặc `skills_modified = true` (nếu có) và cách xử lý.
-
 ```text
 | Task | baseline | subagents | skills-auto |
 |---|---|---|---|
@@ -119,8 +111,6 @@ Không có lần chạy nào `skills_modified = true` (đã xác nhận qua `ver
 
 ## 8. Phân tích
 
-> Trả lời từng câu bằng số liệu từ mục 7 và bằng chứng từ vết. Kết quả âm hoặc không có khác biệt vẫn hợp lệ nếu được phân tích tốt.
-
 1. **Tác vụ học**: cả hai điều kiện thử nghiệm đều **kém hơn** `baseline` (mean 0.63) — `subagents` 0.31 (giảm ~51%) và `skills-auto` 0.43 (giảm ~32%). Không có điều kiện nào cải thiện tác vụ học. **Tác vụ đánh giá**: cả 3 điều kiện cho **cùng một kết quả hệt nhau** (mean 0.57, và cả danh sách check thất bại giống hệt nhau từng check ở cả 3 điều kiện — xem bảng ở mục 2 dưới). Không điều kiện nào cải thiện tác vụ đánh giá. Vì không có cải thiện nào ở cả hai loại tác vụ nên câu hỏi "cải thiện học nhưng không cải thiện eval" không áp dụng theo nghĩa tích cực; nhưng có hiện tượng ngược: `subagents` và `skills-auto` đều làm **giảm điểm tác vụ học** (do `code-learn` bị `GraphRecursionError` ở cả hai điều kiện, trong khi `baseline` hoàn thành 6/10) mà không ảnh hưởng gì đến eval — dấu hiệu cho thấy `GraphRecursionError` ở `code-learn` là vấn đề cục bộ của một tác vụ/điều kiện cụ thể (nhiều bước phối hợp subagent hoặc đọc skill tốn bước), không phải là chỉ dấu tổng quát về chất lượng điều kiện.
 2. Tách theo `check_breakdown.py`: **check kỹ thuật** đạt cao và ổn định ở `baseline`/`skills-auto` cho eval (17/18 cả hai), nhưng **check quy ước (`rule_`) đạt 0/12 ở CẢ BA điều kiện trên eval** — không có ngoại lệ. Đối chiếu danh sách check thất bại cụ thể: `code-eval`, `data-eval`, `logs-eval` đều thất bại **giống hệt nhau** ở cả 3 điều kiện (ví dụ `data-eval`: `rule_money_in_cents, rule_meta_block, rule_clean_csv, rule_sorted_keys_format` — cả baseline, subagents, skills-auto đều fail đúng 4 check này). Mỗi tác vụ eval có đúng 1 quy ước **mới** chưa từng xuất hiện ở tác vụ học: `rule_version_bump` (code-eval), `rule_sorted_keys_format` (data-eval), `rule_source_line` (logs-eval). **Skill KHÔNG giúp được** bất kỳ check quy ước nào, kể cả các quy ước đã xuất hiện ở tác vụ học (`rule_money_in_cents` cũng fail lại ở `data-eval` dù `data-normalization-checklist` được đọc 2/3 lần ở tác vụ học) — vì nội dung skill tập trung vào xử lý dữ liệu kỹ thuật (nhóm D), không có skill nào dạy "luôn tìm các dòng bắt đầu bằng RULE trong đề" một cách đủ mạnh để tác tử áp dụng nhất quán, và quan trọng hơn: ở eval, `skills_read = 0/3` (xem mục 7) — tác tử **không hề đọc skill nào** trên cả 3 tác vụ đánh giá, nên không có cơ hội giúp ích dù skill có đúng hay không.
 3. **Check skill giúp đạt** (gián tiếp, không phải `rule_`): ở `data-learn`, `trace.md` cho thấy tác tử đọc `data-normalization-checklist` và `pre-submission-audit` (`skills_read=2`) trước khi ghi `clean.csv`; các check kỹ thuật về chuẩn hóa dữ liệu (trùng lặp, định dạng ngày, vùng miền) đạt đầy đủ — khớp với nội dung skill dù không thể tách bạch hoàn toàn công của skill với khả năng vốn có của mô hình (baseline cũng đạt các check này). **Check skill không giúp**: `rule_money_in_cents` ở `data-learn`/`data-eval` tiếp tục thất bại ở điều kiện `skills-auto` dù `data-normalization-checklist` được đọc — skill liệt kê "Chuyển đổi các giá trị tiền tệ sang đơn vị nhỏ nhất (cents)" khá chung chung, không đủ cụ thể để tác tử tự suy ra định dạng chính xác `answer.json` yêu cầu (số nguyên, không có USD) khi đề bài gốc không nêu rõ — đây là trường hợp "skill thiếu chi tiết cụ thể" dù đúng hướng.
@@ -129,8 +119,6 @@ Không có lần chạy nào `skills_modified = true` (đã xác nhận qua `ver
 6. **Nhiễu**: so điểm tác vụ học Phần 3.4 (`results/skills-auto-dev`) với sau đóng băng (`results/skills-auto`) của cùng bộ skill — `data-learn` giữ nguyên 5/8 cả hai lần (chênh lệch 0), `logs-learn` giữ nguyên 6/9 cả hai lần (chênh lệch 0), nhưng `code-learn` đổi từ 5/10 (Phần 3.4) xuống 0/10 (sau đóng băng). Tuy nhiên chênh lệch của `code-learn` **không phải nhiễu ngẫu nhiên thuần túy**: Phần 3.4 chạy với `recursion_limit` mặc định 60, còn lần chạy chính thức dùng `--recursion-limit 40` để tiết kiệm RPD (xem mục 1, mục 9) — một biến số thực sự đã thay đổi, không chỉ ngẫu nhiên hóa của mô hình. Với 2/3 tác vụ hoàn toàn ổn định (chênh lệch 0) khi *không* đổi limit, nhóm đánh giá: **nhiễu thuần của mô hình ở `LAB_TEMPERATURE=0` là thấp** trên các tác vụ hoàn thành bình thường, nhưng các tác vụ chạm ngưỡng `recursion_limit` (như `code-learn`) rất nhạy với riêng tham số này — nên mọi chênh lệch điểm nhỏ ở các hàng `code-*` trong bảng mục 7 cần được đọc thận trọng và ưu tiên xem `error`/`recursion_limit` thực tế trước khi kết luận về hiệu quả của điều kiện.
 
 ## 9. Hạn chế và tính hợp lệ
-
-> Nêu ít nhất 3 hạn chế và ảnh hưởng của từng hạn chế đến kết luận (ví dụ: chỉ 3 tác vụ mỗi vai trò, mỗi cấu hình chạy một lần, nhiễu của mô hình, tác vụ do giảng viên thiết kế sẵn quy ước, chỉ một mô hình).
 
 1. **`recursion_limit` không đồng nhất giữa các điều kiện/lần chạy** (60 cho baseline và một số lần `subagents`/`skills-auto`, 40 cho các lần chạy lại eval để tiết kiệm RPD). Đây là biến nhiễu thật, không chỉ lý thuyết: 6/18 lần chạy bị `GraphRecursionError`, và với `code-learn` ở `skills-auto`, việc đổi limit (không phải đổi skill) là nguyên nhân chính khiến điểm giảm từ 5/10 (Phần 3.4, limit 60) xuống 0/10 (chính thức, limit 40). Mọi so sánh liên quan đến tác vụ `code-*` cần đọc kèm `error`/limit thực tế, không chỉ điểm số.
 2. **Mỗi tác vụ × điều kiện chỉ chạy đúng 1 lần** (trừ các lần chạy lại do sự cố hạ tầng, không phải để đo nhiễu). Với 6 tác vụ, một vài điểm khác biệt giữa điều kiện (ví dụ `data-learn` baseline 5/8 so với subagents 3/8) có thể một phần do tính ngẫu nhiên của mô hình (dù `LAB_TEMPERATURE=0`, Gemini vẫn có thể không hoàn toàn tất định) chứ không chỉ do bản chất điều kiện — cỡ mẫu quá nhỏ để tách bạch tín hiệu khỏi nhiễu bằng thống kê.
