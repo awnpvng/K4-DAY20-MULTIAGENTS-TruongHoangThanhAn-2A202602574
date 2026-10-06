@@ -61,15 +61,36 @@
 
 ## Phần 4. Giả thuyết, đóng băng, đo trên tác vụ đánh giá
 
-- [ ] [report] Viết giả thuyết H1-H3 vào mục 2 báo cáo (trước khi thấy điểm eval)
-- [ ] [run] `git add -A && git commit -m "hypotheses"`
-- [ ] [run] `git add -A && git commit --allow-empty -m "freeze skills" && git tag freeze`
-- [ ] [run] `python -m lab.runner --condition baseline --tasks eval`
-- [ ] [run] `python -m lab.runner --condition subagents --tasks eval`
-- [ ] [run] (trước khi ghi đè) sao lưu `mv results/skills-auto results/skills-auto-dev`
-- [ ] [run] `python -m lab.runner --condition skills-auto --tasks all`
+- [X] [report] Viết giả thuyết H1-H3 vào mục 2 báo cáo (trước khi thấy điểm eval)
+- [X] [run] `git add -A && git commit -m "hypotheses"` → commit `252ae9c`
+- [X] [run] `git add -A && git commit --allow-empty -m "freeze skills" && git tag freeze` → commit `f5b8480`
+- [X] [run] `python -m lab.runner --condition baseline --tasks eval` → code-eval 6/11 tokens=90896; data-eval 5/9 tokens=185664 (GraphRecursionError); logs-eval 6/10 tokens=44060
+- [X] [run] `python -m lab.runner --condition subagents --tasks eval --recursion-limit 40` (hạ limit để tiết kiệm RPD) → code-eval 6/11 tokens=140859 (GraphRecursionError ngay cả với limit 40); data-eval 5/9 tokens=213357; logs-eval 6/10 tokens=98929
+- [X] [run] Đã sao lưu `results/skills-auto-dev` trước đó ở Phần 3.4
+- [X] [run] `python -m lab.runner --condition skills-auto --tasks all --recursion-limit 40` → code-eval 4/11 (GraphRecursionError@40); code-learn 5/10 (GraphRecursionError@40); data-eval 5/9 (GraphRecursionError@40); data-learn 5/8 tokens=108670; logs-eval 6/10 tokens=49256; logs-learn 6/9 tokens=61331
+
+### ⏸️ TẠM DỪNG (2026-10-06, ~13:40) — RPD cạn, chờ reset ~17h (ước tính lại được sau ~06:00 2026-10-07)
+
+**Sự cố:** 3/6 tác vụ `skills-auto --tasks all` bị `GraphRecursionError` ở `--recursion-limit 40` (trong khi `baseline` dùng limit mặc định 60) → gây nhiễu (confound) khi so sánh điều kiện. Quyết định chạy lại 4 ô sau với limit=60 để đồng nhất:
+`subagents/code-eval`, `skills-auto/code-eval`, `skills-auto/code-learn`, `skills-auto/data-eval`.
+
+**Hậu quả:** Lần chạy lại làm **cạn hoàn toàn RPD** của `gemini-3.1-flash-lite` (500/500) giữa chừng — lệnh đầu tiên (`subagents/code-eval`) dính 429 giữa lúc chạy (ghi đè kết quả `GraphRecursionError` sạch trước đó bằng kết quả nhiễu `score=5/11, error=429`); 3 lệnh sau (`skills-auto` 3 tác vụ) bị 429 ngay lập tức (`score=0, tokens=0`), **ghi đè mất luôn 3 kết quả `GraphRecursionError@40` hợp lệ trước đó** (không khôi phục được vì `run_task` luôn xóa sandbox).
+
+**Trạng thái hiện tại của 4 ô bị ảnh hưởng (KHÔNG dùng được cho báo cáo):**
+- `results/subagents/code-eval/run.json`: score=5/11, `error=GoogleRateLimitError 429` (nhiễu, không phải GraphRecursionError thật)
+- `results/skills-auto/code-eval/run.json`: score=0/11, tokens=0, `error=429`
+- `results/skills-auto/code-learn/run.json`: score=0/10, tokens=0, `error=429`
+- `results/skills-auto/data-eval/run.json`: score=0/9, tokens=0, `error=429`
+
+**Việc cần làm khi tiếp tục (ngày mai, sau khi RPD reset):**
+1. Chạy lại đúng 4 lệnh trên — **dùng `--recursion-limit 40`** (đồng nhất với các ô khác của `subagents`/`skills-auto`, KHÔNG cố khớp với baseline=60 nữa, để tránh tốn thêm request và tái lặp sự cố):
+   `python -m lab.runner --condition subagents --tasks code-eval --recursion-limit 40`
+   `python -m lab.runner --condition skills-auto --tasks code-eval code-learn data-eval --recursion-limit 40`
+2. Ghi vào báo cáo (mục 9 - hạn chế): có sự khác biệt `recursion_limit` giữa `baseline` (60, mặc định) và `subagents`/`skills-auto` (40, giảm để tiết kiệm RPD) — đây là một nguồn nhiễu thật, không chỉ là giả thuyết, cần nêu rõ khi so sánh tỉ lệ `GraphRecursionError` giữa các điều kiện.
+3. Sau khi có đủ 4 ô, tiếp tục: `python scripts/verify_freeze.py` → `python -m lab.compare > report/table.md` → `python scripts/check_breakdown.py`.
+
 - [ ] [run] `python scripts/verify_freeze.py` → kỳ vọng `OK`
-- [ ] [fix bug] Nếu một lần chạy lỗi: chạy lại lần đó, ghi chú trong báo cáo
+- [ ] [fix bug] Chạy lại 4 ô bị nhiễu bởi 429 (xem ghi chú tạm dừng ở trên) với `--recursion-limit 40`
 - [ ] [run] `python -m lab.compare > report/table.md`
 - [ ] [run] `python scripts/check_breakdown.py` (dữ liệu cho mục 4, 7, 8 báo cáo)
 
