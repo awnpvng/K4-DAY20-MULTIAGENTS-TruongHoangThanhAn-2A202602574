@@ -69,7 +69,17 @@
 - [X] [run] Đã sao lưu `results/skills-auto-dev` trước đó ở Phần 3.4
 - [X] [run] `python -m lab.runner --condition skills-auto --tasks all --recursion-limit 40` → code-eval 4/11 (GraphRecursionError@40); code-learn 5/10 (GraphRecursionError@40); data-eval 5/9 (GraphRecursionError@40); data-learn 5/8 tokens=108670; logs-eval 6/10 tokens=49256; logs-learn 6/9 tokens=61331
 
-### ⏸️ TẠM DỪNG (2026-10-06, ~13:40) — RPD cạn, chờ reset ~17h (ước tính lại được sau ~06:00 2026-10-07)
+### ✅ ĐÃ TIẾP TỤC (2026-10-06, ~14:xx) — đổi API key mới, chạy lại thành công 4 ô bị nhiễu
+
+Key cũ hết RPD; key thay thế đầu tiên (`<redacted>`) bị lỗi **403 PERMISSION_DENIED ở cấp project** (thử cả `gemini-3.1-flash-lite` và `gemini-3.8-flash` đều lỗi, `gemini-2.5-flash` thì 404 model deprecated — không phải do tên model). Đổi sang key thứ 2, test OK, chạy lại 4 ô với `--recursion-limit 40`:
+- `subagents/code-eval`: score=6/11 tokens=164395 (GraphRecursionError@40, dữ liệu sạch)
+- `skills-auto/code-eval`: score=6/11 tokens=105494 (GraphRecursionError@40)
+- `skills-auto/code-learn`: score=0/10 tokens=98767 (GraphRecursionError@40)
+- `skills-auto/data-eval`: score=5/9 tokens=187157 (GraphRecursionError@40)
+
+Đủ dữ liệu 6 tác vụ × 3 điều kiện (18 run.json hợp lệ). Tiếp tục `verify_freeze.py` → `compare` → `check_breakdown.py`.
+
+### ⏸️ TẠM DỪNG (2026-10-06, ~13:40) — RPD cạn, chờ reset ~17h (ước tính lại được sau ~06:00 2026-10-07) — ĐÃ GIẢI QUYẾT bằng key mới, xem ghi chú trên
 
 **Sự cố:** 3/6 tác vụ `skills-auto --tasks all` bị `GraphRecursionError` ở `--recursion-limit 40` (trong khi `baseline` dùng limit mặc định 60) → gây nhiễu (confound) khi so sánh điều kiện. Quyết định chạy lại 4 ô sau với limit=60 để đồng nhất:
 `subagents/code-eval`, `skills-auto/code-eval`, `skills-auto/code-learn`, `skills-auto/data-eval`.
@@ -89,17 +99,19 @@
 2. Ghi vào báo cáo (mục 9 - hạn chế): có sự khác biệt `recursion_limit` giữa `baseline` (60, mặc định) và `subagents`/`skills-auto` (40, giảm để tiết kiệm RPD) — đây là một nguồn nhiễu thật, không chỉ là giả thuyết, cần nêu rõ khi so sánh tỉ lệ `GraphRecursionError` giữa các điều kiện.
 3. Sau khi có đủ 4 ô, tiếp tục: `python scripts/verify_freeze.py` → `python -m lab.compare > report/table.md` → `python scripts/check_breakdown.py`.
 
-- [ ] [run] `python scripts/verify_freeze.py` → kỳ vọng `OK`
-- [ ] [fix bug] Chạy lại 4 ô bị nhiễu bởi 429 (xem ghi chú tạm dừng ở trên) với `--recursion-limit 40`
-- [ ] [run] `python -m lab.compare > report/table.md`
-- [ ] [run] `python scripts/check_breakdown.py` (dữ liệu cho mục 4, 7, 8 báo cáo)
+- [X] [fix bug] Chạy lại 4 ô bị nhiễu bởi 429 với `--recursion-limit 40` (xem ghi chú "ĐÃ TIẾP TỤC" trên) — xong
+- [X] [fix bug] `verify_freeze.py` báo FAIL lần đầu ("skills/ differs from freeze tag") do `skills/auto/README.md` bị git tự đổi LF→CRLF khi commit WIP trước đó (không phải tôi sửa nội dung) → `git checkout freeze -- skills/auto/README.md` để khôi phục đúng byte đã freeze
+- [X] [run] `python scripts/verify_freeze.py` → **OK** (checked 6 runs of skill conditions)
+- [X] [run] `python -m lab.compare > report/table.md` → bảng đủ 3 cột, 6 hàng tác vụ + hàng tổng hợp
+- [X] [run] `python scripts/check_breakdown.py` → baseline/eval 17/18 kỹ thuật, 0/12 quy ước; subagents/learn 8/18 kỹ thuật (giảm mạnh do GraphRecursionError ở code-learn); skills-auto/learn 11/18, đọc skill 1/3
 
 ## Phần 5. Báo cáo
 
-- [ ] [report] Hoàn thiện `report/REPORT.md` mục 1–7 (bản nháp trong buổi học)
-- [ ] [report] Dán bảng `report/table.md` vào mục 7
-- [ ] [report] Trả lời đủ 6 câu phân tích ở mục 8 (có số liệu)
-- [ ] [report] Hoàn thiện mục 9 (≥3 hạn chế) và mục 10 (kết luận, tối đa 5 câu)
+- [X] [report] Hoàn thiện `report/REPORT.md` mục 1–7 — mục 1 cập nhật model/limit/WSL/số lần chạy/commit freeze thật
+- [X] [report] Dán bảng `report/table.md` + `check_breakdown.py` vào mục 7, kèm bảng giải thích 6 lần chạy có `error`
+- [X] [report] Trả lời đủ 6 câu phân tích ở mục 8 (có số liệu: subagents/skills-auto không cải thiện eval so baseline, skill không giúp check rule_, token efficiency skills-auto tốt nhất, không rò rỉ nhưng có overfitting, nhiễu thấp trừ code-* do đổi recursion_limit)
+- [X] [report] Hoàn thiện mục 9 (5 hạn chế) và mục 10 (kết luận 5 câu + đề xuất cải tiến) + Phụ lục (lệnh đã chạy, ghi chú môi trường WSL)
+- [ ] [report] Mục 1: điền tên/mã sinh viên (cần thông tin từ người dùng — chưa có)
 
 ## Phần 6. Thử thách mở rộng (tùy chọn, +5 điểm)
 

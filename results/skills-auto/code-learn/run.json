@@ -2,14 +2,14 @@
   "task": "code-learn",
   "condition": "skills-auto",
   "role": "learn",
-  "error": "GoogleRateLimitError: Error calling model 'gemini-3.1-flash-lite' (RESOURCE_EXHAUSTED): 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 500, model: gemini-3.1-flash-lite\\nPlease retry in 17h18m21.492765719s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-3.1-flash-lite'}, 'quotaValue': '500'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '62301s'}]}}",
-  "timestamp": "2026-10-06T06:41:01.494212+00:00",
+  "error": "GraphRecursionError: Recursion limit of 40 reached without hitting a stop condition. You can increase the limit by setting the `recursion_limit` config key.\nFor troubleshooting, visit: https://docs.langchain.com/oss/python/langgraph/errors/GRAPH_RECURSION_LIMIT",
+  "timestamp": "2026-10-06T10:52:54.261542+00:00",
   "skills_sha256": "7497f83a76ed3f368de45ef4255cf36e6f0f5994fcda49673e7b18c7e928b446",
-  "seconds": 34.8,
+  "seconds": 49.0,
   "tokens": {
-    "input": 0,
-    "output": 0,
-    "total": 0
+    "input": 98228,
+    "output": 539,
+    "total": 98767
   },
   "tool_calls": 0,
   "subagent_calls": 0,
@@ -23,7 +23,7 @@
     {
       "name": "visible_suite_passes",
       "passed": false,
-      "detail": "2 failed, 4 passed in 5.24s"
+      "detail": "2 failed, 4 passed in 2.50s"
     },
     {
       "name": "tests_not_modified",
